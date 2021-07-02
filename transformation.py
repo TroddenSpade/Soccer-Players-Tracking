@@ -8,15 +8,15 @@ n = 626
 m = 417
 output_size = (n, m)
 
-points1 = np.array([(873, 779),
-                    (1258, 144),
+points1 = np.array([(873, 780),
+                    (1136, 115),
                     (640, 110),
-                    (38, 209)]).astype(np.float32)
+                    (141, 168)]).astype(np.float32)
 
-points2 = np.array([(317, 371),
-                    (500, 166),
-                    (317, 43),
-                    (134, 166)]).astype(np.float32)
+points2 = np.array([(317, 370),
+                    (500, 92),
+                    (317, 10),
+                    (134, 94)]).astype(np.float32)
 
 for i in range(4):
     cv2.circle(I1, (int(points1[i, 0]), int(points1[i, 1])), 3, [0, 0, 255], 2)
