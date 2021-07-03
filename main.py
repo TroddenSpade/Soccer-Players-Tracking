@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 mog2_backsub = cv2.createBackgroundSubtractorMOG2(detectShadows=True) #60
 # backSub = cv2.bgsegm.BackgroundSubtractorGMG() #20
-# mog_backSub = cv2.bgsegm.createBackgroundSubtractorMOG()
+# mog_backsub = cv2.bgsegm.createBackgroundSubtractorMOG()
 knn_backsub = cv2.createBackgroundSubtractorKNN(detectShadows=True) #80
 
 CUT_X = 70
@@ -27,7 +27,7 @@ while True:
     I_mog = mog2_backsub.apply(I)
     I_knn = knn_backsub.apply(I)
 
-    mog_rate = 0.3
+    mog_rate = 0.25
     I = ((1-mog_rate)*I_knn + mog_rate*I_mog).astype(np.uint8)
 
     _, I = cv2.threshold(I, 250, 255, cv2.THRESH_BINARY)
@@ -39,14 +39,25 @@ while True:
         if stats[i][4] < 60:
             I[C == i] = 0
 
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones((9, 9), np.uint8)
     I = cv2.morphologyEx(I, cv2.MORPH_CLOSE, kernel)
 
     _, contours, _ = cv2.findContours(I, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-    cv2.drawContours(ROI, contours, -1, (0,255,0), 2)
+    for cnt in contours:
+        area = cv2.contourArea(cnt)
+        x, y, w, h = cv2.boundingRect(cnt)
+        if area > 40:
+            if w >= 3*h: continue
+            # if w > h:
+            #     w //=3
+            #     x += 2 * w
+            # cv2.drawContours(ROI, [cnt], -1, (0,255,0), 2)
+            cv2.rectangle(ROI, (x,y), (x+w,y+h), (0,0,255), 2)
+
+
 
     if ret == True:
-        # cv2.imshow('soccer',I_org)
+        cv2.imshow('soccer',I)
         cv2.imshow('soccer mask knn',ROI)
 
         
