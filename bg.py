@@ -10,6 +10,9 @@ while ret:
     ret, I = cap.read()
     if not ret:
         break
+
+    I = cv2.GaussianBlur(I,(5,5),0)
+
     cv2.accumulateWeighted(I,avg,0.004)
 	
     bg = cv2.convertScaleAbs(avg)
