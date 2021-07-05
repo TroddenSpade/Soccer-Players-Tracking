@@ -40,6 +40,6 @@ def get_perspective_transform(I0_org, I1_org):
     resized = cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
     return resized
 
-# J = get_perspective_transform(I0_org, I1_org)
-# cv2.imshow("j", J)
-# cv2.waitKey()
+J = get_perspective_transform(I0_org, I1_org)
+cv2.imshow("j", J)
+cv2.waitKey()
