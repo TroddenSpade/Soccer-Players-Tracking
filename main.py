@@ -9,12 +9,14 @@ mog2_backsub = cv2.createBackgroundSubtractorMOG2(detectShadows=True) #60
 # mog_backsub = cv2.bgsegm.createBackgroundSubtractorMOG()
 knn_backsub = cv2.createBackgroundSubtractorKNN(detectShadows=True) #80
 
-CUT_X = 70
-
-cap = cv2.VideoCapture('output.mp4')
+file_name = '0_1'
+cap = cv2.VideoCapture(file_name + ".mp4")
 
 if (cap.isOpened()== False):
     print("Error opening video stream or file")
+
+CUT_X = 70
+H = get_perspective_transform(type=1)
 
 frame_count = 0
 img_count = 0
@@ -22,11 +24,14 @@ names = []
 
 while True:
     frame_count += 1
+    if frame_count > 2000:
+        break
     ret, I_org = cap.read()
     if not ret:
         break
     
-    ROI = I_org[CUT_X:,:]
+    ROI = I_org[:,:]
+    FIELD = cv2.imread("field.jpg")
 
     I = cv2.GaussianBlur(ROI,(5,5),0)
 
@@ -48,6 +53,8 @@ while True:
     #     if stats[i][4] < 60:
     #         I[C == i] = 0
 
+    pts = []
+    cord = []
     _, contours, _ = cv2.findContours(I, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
         area = cv2.contourArea(cnt)
@@ -62,28 +69,39 @@ while True:
 
             l = min(cX-x, x+w-cX)
 
-            # if frame_count % 20 == 0:
-            #     name = "img/" + str(img_count) + '.jpg'
-            #     cv2.imwrite(name, ROI[y:y+h, x:x+w])
-            #     names.append(name)
-            #     img_count += 1
+            pts.append([[x_p, y+h]])
+            cord.append([(cX-l,y),(cX+l,y+h)])
 
-            cv2.rectangle(ROI, (cX-l,y), (cX+l,y+h), (0,0,255), 2)
-            cv2.circle(ROI, (cX, cY), 5, (0, 0, 255), -1) # center
-            cv2.circle(ROI, (x_p,y+h), 5, (0, 255, 0), -1) # foot
-            cv2.putText(ROI, str() + "-" + str(y), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 0))
+    pts = np.array(pts, np.float32)
+    if len(pts) > 0:
+        out = cv2.perspectiveTransform(np.array(pts, np.float32), H).reshape(-1,2)
+        for i, pt in enumerate(out):
+            if pt[1] > 22:
+                cv2.rectangle(ROI, cord[i][0], cord[i][1], (0,0,255), 2)
+                cv2.circle(FIELD, (pt[0], pt[1]), 5, (0, 0, 255), -1) # center
+
+                if frame_count % 20 == 0 & True: #frame_count > 1000;
+                    name = "img/" + str(file_name) + "-" + str(frame_count) + "-" + str(img_count) + '.jpg'
+                    cv2.imwrite(name, ROI[y:y+h, x:x+w])
+                    names.append(name)
+                    img_count += 1
+
+
+    # output_size = (FIELD.shape[1], FIELD.shape[0])
+    # J = cv2.warpPerspective(ROI, H, output_size)
 
 
     if ret == True:
-        cv2.imshow('soccer mask',ROI)
+        cv2.imshow('soccer mask', ROI)
+        cv2.imshow('soccer Map', FIELD)
     else:
         break
     key = cv2.waitKey(20)
     if key == ord('q'):
         break
 
-# names_arr = np.array(names)
-# np.save("names.npy", names_arr)
+names_arr = np.array(names)
+np.save("names.npy", names_arr)
 
 cap.release()
 cv2.destroyAllWindows()
