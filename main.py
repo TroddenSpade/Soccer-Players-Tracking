@@ -9,7 +9,7 @@ mog2_backsub = cv2.createBackgroundSubtractorMOG2(detectShadows=True) #60
 # mog_backsub = cv2.bgsegm.createBackgroundSubtractorMOG()
 knn_backsub = cv2.createBackgroundSubtractorKNN(detectShadows=True) #80
 
-file_name = '0_1'
+file_name = '0_0'
 cap = cv2.VideoCapture(file_name + ".mp4")
 
 if (cap.isOpened()== False):
@@ -55,6 +55,7 @@ while True:
 
     pts = []
     cord = []
+    xy = []
     _, contours, _ = cv2.findContours(I, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
         area = cv2.contourArea(cnt)
@@ -66,25 +67,30 @@ while True:
 
             dis = x+w//2 - cX 
             x_p = cX - dis
-
             l = min(cX-x, x+w-cX)
 
             pts.append([[x_p, y+h]])
             cord.append([(cX-l,y),(cX+l,y+h)])
+            xy.append((x,y,x+w,y+h))
+
 
     pts = np.array(pts, np.float32)
     if len(pts) > 0:
         out = cv2.perspectiveTransform(np.array(pts, np.float32), H).reshape(-1,2)
         for i, pt in enumerate(out):
-            if pt[1] > 22:
+            if pt[1] > 30:
+                #######################
+                ####################### box saving
+                if frame_count % 20 == 0 & True: #frame_count > 1000;
+                    name = "img/" + str(file_name) + "-" + str(frame_count) + "-" + str(img_count) + '.jpg'
+                    x,y, z,v = xy[i]
+                    cv2.imwrite(name, ROI[y:v, x:z])
+                    names.append(name)
+                    img_count += 1
+
                 cv2.rectangle(ROI, cord[i][0], cord[i][1], (0,0,255), 2)
                 cv2.circle(FIELD, (pt[0], pt[1]), 5, (0, 0, 255), -1) # center
 
-                if frame_count % 20 == 0 & True: #frame_count > 1000;
-                    name = "img/" + str(file_name) + "-" + str(frame_count) + "-" + str(img_count) + '.jpg'
-                    cv2.imwrite(name, ROI[y:y+h, x:x+w])
-                    names.append(name)
-                    img_count += 1
 
 
     # output_size = (FIELD.shape[1], FIELD.shape[0])
