@@ -45,19 +45,18 @@ def get_perspective_transform(type):
     return cv2.getPerspectiveTransform(points1, points2)
 
 
-I1 = cv2.imread('bg_1.png')
-I2 = cv2.imread('field.jpg')
+# I1 = cv2.imread('bg_1.png')
+# I2 = cv2.imread('field.jpg')
 
-output_size = (I2.shape[1], I2.shape[0])
-H = get_perspective_transform(1)
-J = cv2.warpPerspective(I1, H, output_size)
+# output_size = (I2.shape[1], I2.shape[0])
+# H = get_perspective_transform(1)
+# J = cv2.warpPerspective(I1, H, output_size)
 
-cv2.imshow('I1', I1)
-cv2.waitKey(0)
+# cv2.imshow('I1', I1)
+# cv2.waitKey(0)
 
-cv2.imshow('I2', I2)
-cv2.waitKey(0)
+# cv2.imshow('I2', I2)
+# cv2.waitKey(0)
 
-cv2.imshow('J', J)
-# cv2.imwrite('trans_1.png', J)
-cv2.waitKey(0)
+# cv2.imshow('J', J)
+# cv2.waitKey(0)
