@@ -27,14 +27,17 @@ while True:
     I_mog = mog2_backsub.apply(I)
     I_knn = knn_backsub.apply(I)
 
-    mog_rate = 0.6
+    mog_rate = 0.8
     I = ((1-mog_rate)*I_knn + mog_rate*I_mog).astype(np.uint8)
 
-    _, I = cv2.threshold(I, 250, 255, cv2.THRESH_BINARY)
+    _, I = cv2.threshold(I, 254, 255, cv2.THRESH_BINARY)
     # _, I_mog = cv2.threshold(I_mog, 240, 255, cv2.THRESH_BINARY)
     # _, I_knn = cv2.threshold(I_knn, 240, 255, cv2.THRESH_BINARY)
 
-    kernel = np.ones((7, 7), np.uint8)
+
+    kernel = np.ones((5, 5), np.uint8)
+    I = cv2.morphologyEx(I, cv2.MORPH_CLOSE, kernel)
+    kernel = np.ones((11, 1), np.uint8)
     I = cv2.morphologyEx(I, cv2.MORPH_CLOSE, kernel)
     # I = cv2.erode(I, kernel, iterations = 1)
 

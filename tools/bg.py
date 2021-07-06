@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 
-cap = cv2.VideoCapture('output.mp4')
+cap = cv2.VideoCapture('0_2_mini.mp4')
 ret, I = cap.read()
 
 avg = np.float32(I)
@@ -17,10 +17,8 @@ while ret:
 	
     bg = cv2.convertScaleAbs(avg)
 
-    cv2.imshow('img',bg)
 
-
-cv2.imwrite('./bg.png', bg)
+cv2.imwrite('./bg_2.png', bg)
 
 cv2.destroyAllWindows()
 cap.release()
