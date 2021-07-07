@@ -5,15 +5,15 @@ import numpy as np
 def get_perspective_transform(type):
     global points1, points2
     if type == 1:
-        points1 = np.array([(1223, 744.7),
-                            (1225.44, 87.5),
-                            (25, 148.2),
-                            (224.35, 830)]).astype(np.float32)
+        points1 = np.array([(1255, 744.7), #br
+                            (1225.44, 87.5), #tr
+                            (25, 148.2), # tl
+                            (230.35, 830)]).astype(np.float32) # bl
 
-        points2 = np.array([(367.28, 371),
-                            (592.5, 42.55),
-                            (41.55, 42.55),
-                            (263.9, 371)]).astype(np.float32)
+        points2 = np.array([(350.28, 371), #br
+                            (592.5, 42.55), #tr
+                            (41.55, 42.55), #tl
+                            (260.9, 371)]).astype(np.float32) # bl
 
     if type == 0:
         points1 = np.array([(52, 309),
@@ -37,9 +37,9 @@ def get_perspective_transform(type):
                             (594.5, 40.5),
                             (317, 236)]).astype(np.float32)
 
-    for i in range(4):
-        cv2.circle(I1, (int(points1[i, 0]), int(points1[i, 1])), 3, [0, 0, 255], 2)
-        cv2.circle(I2, (int(points2[i, 0]), int(points2[i, 1])), 3, [0, 0, 255], 2)
+    # for i in range(4):
+    #     cv2.circle(I1, (int(points1[i, 0]), int(points1[i, 1])), 3, [0, 0, 255], 2)
+    #     cv2.circle(I2, (int(points2[i, 0]), int(points2[i, 1])), 3, [0, 0, 255], 2)
 
     # compute homography from point correspondences
     return cv2.getPerspectiveTransform(points1, points2)
