@@ -27,36 +27,36 @@ def get_perspective_transform(type):
                             (40.5, 40.5)]).astype(np.float32)
 
     if type == 2:
-        points1 = np.array([(402, 901),
+        points1 = np.array([(338.34, 949.59),
                             (1257, 272),
                             (519, 177),
-                            (26, 423)]).astype(np.float32)
+                            (11, 252.7)]).astype(np.float32)
 
-        points2 = np.array([(317, 371),
+        points2 = np.array([(302.23, 371),
                             (594.5, 371),
-                            (594.5, 40.5),
-                            (317, 236)]).astype(np.float32)
+                            (594.5, 35.5),
+                            (344.52, 42.5)]).astype(np.float32)
 
-    for i in range(4):
-        cv2.circle(I1, (int(points1[i, 0]), int(points1[i, 1])), 3, [0, 0, 255], 2)
-        cv2.circle(I2, (int(points2[i, 0]), int(points2[i, 1])), 3, [0, 0, 255], 2)
+    # for i in range(4):
+    #     cv2.circle(I1, (int(points1[i, 0]), int(points1[i, 1])), 3, [0, 0, 255], 2)
+    #     cv2.circle(I2, (int(points2[i, 0]), int(points2[i, 1])), 3, [0, 0, 255], 2)
 
     # compute homography from point correspondences
     return cv2.getPerspectiveTransform(points1, points2)
 
 
-I1 = cv2.imread('../bg_0.png')
-I2 = cv2.imread('../field.jpg')
-
-output_size = (I2.shape[1], I2.shape[0])
-H = get_perspective_transform(0)
-J = cv2.warpPerspective(I1, H, output_size)
-
-cv2.imshow('I1', I1)
-cv2.waitKey(0)
-
-cv2.imshow('I2', I2)
-cv2.waitKey(0)
-
-cv2.imshow('J', J)
-cv2.waitKey(0)
+# I1 = cv2.imread('../bg_2.png')
+# I2 = cv2.imread('../field.jpg')
+#
+# output_size = (I2.shape[1], I2.shape[0])
+# H = get_perspective_transform(2)
+# J = cv2.warpPerspective(I1, H, output_size)
+#
+# cv2.imshow('I1', I1)
+# cv2.waitKey(0)
+#
+# cv2.imshow('I2', I2)
+# cv2.waitKey(0)
+#
+# cv2.imshow('J', J)
+# cv2.waitKey(0)
