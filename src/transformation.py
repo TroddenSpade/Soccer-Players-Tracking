@@ -17,14 +17,14 @@ def get_perspective_transform(type):
 
     if type == 0:
         points1 = np.array([(52, 309),
-                            (588.66, 664.79),
-                            (1236, 314),
+                            (977.66, 925.64),
+                            (1254.5, 207.52),
                             (818, 159.5)]).astype(np.float32)
 
         points2 = np.array([(40.5, 371.5),
-                            (211, 371.5),
-                            (256, 206),
-                            (40.5, 42.5)]).astype(np.float32)
+                            (295.5, 371.5),
+                            (246.75, 40.5),
+                            (40.5, 40.5)]).astype(np.float32)
 
     if type == 2:
         points1 = np.array([(402, 901),
@@ -37,26 +37,26 @@ def get_perspective_transform(type):
                             (594.5, 40.5),
                             (317, 236)]).astype(np.float32)
 
-    # for i in range(4):
-    #     cv2.circle(I1, (int(points1[i, 0]), int(points1[i, 1])), 3, [0, 0, 255], 2)
-    #     cv2.circle(I2, (int(points2[i, 0]), int(points2[i, 1])), 3, [0, 0, 255], 2)
+    for i in range(4):
+        cv2.circle(I1, (int(points1[i, 0]), int(points1[i, 1])), 3, [0, 0, 255], 2)
+        cv2.circle(I2, (int(points2[i, 0]), int(points2[i, 1])), 3, [0, 0, 255], 2)
 
     # compute homography from point correspondences
     return cv2.getPerspectiveTransform(points1, points2)
 
 
-# I1 = cv2.imread('bg_1.png')
-# I2 = cv2.imread('field.jpg')
+I1 = cv2.imread('../bg_0.png')
+I2 = cv2.imread('../field.jpg')
 
-# output_size = (I2.shape[1], I2.shape[0])
-# H = get_perspective_transform(1)
-# J = cv2.warpPerspective(I1, H, output_size)
+output_size = (I2.shape[1], I2.shape[0])
+H = get_perspective_transform(0)
+J = cv2.warpPerspective(I1, H, output_size)
 
-# cv2.imshow('I1', I1)
-# cv2.waitKey(0)
+cv2.imshow('I1', I1)
+cv2.waitKey(0)
 
-# cv2.imshow('I2', I2)
-# cv2.waitKey(0)
+cv2.imshow('I2', I2)
+cv2.waitKey(0)
 
-# cv2.imshow('J', J)
-# cv2.waitKey(0)
+cv2.imshow('J', J)
+cv2.waitKey(0)
