@@ -7,23 +7,32 @@ knn_backsub = cv2.createBackgroundSubtractorKNN(detectShadows=True) #80
 # backSub = cv2.bgsegm.BackgroundSubtractorGMG() #20
 # mog_backsub = cv2.bgsegm.createBackgroundSubtractorMOG()
 
-def bgs(I_org):
+mask0 = np.load("masks/bg_0_mask.npy")
+mask1 = np.load("masks/bg_1_mask.npy")
+mask2 = np.load("masks/bg_2_mask.npy")
 
-    ROI = I_org[:,:]
+def bgs(I_org, type):
+
+    if type == 0:
+        ROI = cv2.bitwise_and(I_org, I_org, mask = mask0)
+    if type == 1:
+        ROI = cv2.bitwise_and(I_org, I_org, mask = mask1)
+    if type == 2:
+        ROI = cv2.bitwise_and(I_org, I_org, mask = mask2)
 
     I = cv2.GaussianBlur(ROI,(5,5),0)
 
     I_mog = mog2_backsub.apply(I)
     I_knn = knn_backsub.apply(I)
 
-    mog_rate = 0.8
+    mog_rate = 0.6
     I = ((1-mog_rate)*I_knn + mog_rate*I_mog).astype(np.uint8)
 
     _, I = cv2.threshold(I, 254, 255, cv2.THRESH_BINARY)
 
-    kernel = np.ones((5, 5), np.uint8)
+    kernel = np.ones((3, 3), np.uint8)
     I = cv2.morphologyEx(I, cv2.MORPH_OPEN, kernel)
-    kernel = np.ones((11, 7), np.uint8)
+    kernel = np.ones((13, 5), np.uint8)
     I = cv2.morphologyEx(I, cv2.MORPH_CLOSE, kernel)
 
     # n_mog, C, stats, centroids = cv2.connectedComponentsWithStats(I);
@@ -34,26 +43,43 @@ def bgs(I_org):
     return I
 
 
-# cap = cv2.VideoCapture('output.mp4')
-# if (cap.isOpened()== False):
-#     print("Error opening video stream or file")
+cap0 = cv2.VideoCapture('videos/0_0.mp4')
+cap1 = cv2.VideoCapture('videos/0_1.mp4')
+cap2 = cv2.VideoCapture('videos/0_2.mp4')
 
-# while True:
-#     ret, I_org = cap.read()
-#     if not ret:
-#         break
+while True:
+    ret, I0 = cap0.read()
+    ret, I1 = cap1.read()
+    ret, I2 = cap2.read()
+    if not ret:
+        break
     
-#     I = bgs(I_org)
+    I0_bin = bgs(I0, type=0)
+    I1_bin = bgs(I1, type=1)
+    I2_bin = bgs(I2, type=2)
 
 
-#     if ret == True:
-#         cv2.imshow('soccer test',I)
+    scale = 0.4
+    width = int(I1.shape[1] * scale)
+    height = int(I1.shape[0] * scale)
+    dim = (width, height)
+
+    I_bin = np.hstack((cv2.resize(I0_bin, dim), cv2.resize(I1_bin, dim), cv2.resize(I2_bin, dim)))
+    I = np.hstack((cv2.resize(I0, dim), cv2.resize(I1, dim), cv2.resize(I2, dim)))
+
+
+    if ret == True:
+        cv2.imshow('soccer', I)
+        cv2.imshow('soccer binary', I_bin)
         
-#     else:
-#         break
-#     key = cv2.waitKey(20)
-#     if key == ord('q'):
-#         break
+    else:
+        break
 
-# cap.release()
-# cv2.destroyAllWindows()
+    key = cv2.waitKey(60)
+    if key == ord('q'):
+        break
+
+cap0.release()
+cap1.release()
+cap2.release()
+cv2.destroyAllWindows()
