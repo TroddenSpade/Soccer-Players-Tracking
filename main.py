@@ -7,10 +7,6 @@ from src.bgsm import bgs
 from src.contour import get_contours
 from src.classifier import classify, preprocess
 
-mog2_backsub = cv2.createBackgroundSubtractorMOG2(detectShadows=True) #60
-knn_backsub = cv2.createBackgroundSubtractorKNN(detectShadows=True) #80
-# backSub = cv2.bgsegm.BackgroundSubtractorGMG() #20
-# mog_backsub = cv2.bgsegm.createBackgroundSubtractorMOG()
 
 cap0 = cv2.VideoCapture("./videos/" + '0_0' + ".mp4")
 cap1 = cv2.VideoCapture("./videos/" + '0_1' + ".mp4")
@@ -19,6 +15,10 @@ cap2 = cv2.VideoCapture("./videos/" + '0_2' + ".mp4")
 H0 = get_perspective_transform(type=0)
 H1 = get_perspective_transform(type=1)
 H2 = get_perspective_transform(type=2)
+
+left_mask = np.load("masks/I_left.npy")
+center_mask = np.load("masks/I_center.npy")
+right_mask = np.load("masks/I_right.npy")
 
 frame_count = 0
 img_count = 0
@@ -33,51 +33,57 @@ while True:
         break
 
     FIELD = cv2.imread("field.jpg")
-    
-    binary_img1 = bgs(I1, type=1)
-    feet, rec_bounds, bounds, areas = get_contours(binary_img1) 
-
     player_imgs = []
     circles = []
 
+    
+    binary_img0 = bgs(I0, type=0)
+    feet, rec_bounds, bounds, areas = get_contours(binary_img0) 
     ## Camera 0
-    # pts = np.array(feet, np.float32)
-    # if len(pts) > 0:
-    #     out1 = cv2.perspectiveTransform(np.array(pts, np.float32), H1).reshape(-1,2)
-    #     for i, pt in enumerate(out1):
-    #         # filter based on area and position
-    #         if pt[1]*pt[1]/150 < areas[i]:
-    #             x,y, z,v = bounds[i]
+    pts = np.array(feet, np.float32)
+    if len(pts) > 0:
+        out1 = cv2.perspectiveTransform(np.array(pts, np.float32), H0).reshape(-1,2)
+        for i, pt in enumerate(out1):
+            # filter based on area and position
+            if left_mask[int(pt[1]), int(pt[0])]: # and pt[1]*pt[1]/150 < areas[i]:
+                x,y, z,v = bounds[i]
 
-    #             preporcc_img = preprocess(I1[y:v, x:z])
-    #             player_imgs.append(preporcc_img)
+                preporcc_img = preprocess(I0[y:v, x:z])
+                player_imgs.append(preporcc_img)
+                circles.append((pt[0], pt[1]))
+                cv2.rectangle(I0, rec_bounds[i][0], rec_bounds[i][1], (0,0,255), 1)
 
-    #             circles.append((pt[0], pt[1]))
-    #             cv2.rectangle(I1, rec_bounds[i][0], rec_bounds[i][1], (0,0,255), 1)
-    #             cv2.putText(I1, str(areas[i]) + " - " + str(pt[1]), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
-
+    binary_img1 = bgs(I1, type=1)
+    feet, rec_bounds, bounds, areas = get_contours(binary_img1) 
     ## Camera 1
     pts = np.array(feet, np.float32)
     if len(pts) > 0:
         out1 = cv2.perspectiveTransform(np.array(pts, np.float32), H1).reshape(-1,2)
         for i, pt in enumerate(out1):
             # filter based on area and position
-            if pt[1]*pt[1]/150 < areas[i]:
+            if center_mask[int(pt[1]), int(pt[0])] and pt[1]*pt[1]/170 < areas[i]:
                 x,y, z,v = bounds[i]
 
                 preporcc_img = preprocess(I1[y:v, x:z])
                 player_imgs.append(preporcc_img)
-
                 circles.append((pt[0], pt[1]))
-                # cv2.rectangle(I1, rec_bounds[i][0], rec_bounds[i][1], (0,0,255), 1)
-                # cv2.putText(I1, strq(areas[i]) + " - " + str(pt[1]), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 255, 0), 1)
+                cv2.rectangle(I1, rec_bounds[i][0], rec_bounds[i][1], (0,0,255), 1)
 
-                ##################### box saving
-                # if frame_count % 15 == 0:
-                #     name = "img/" + "0_0" + "-" + str(frame_count) + "-" + str(img_count) + '.jpg'
-                #     cv2.imwrite(name, I1[y:v, x:z])
-                #     names.append(name)
-                #     img_count += 1
+    binary_img2 = bgs(I2, type=2)
+    feet, rec_bounds, bounds, areas = get_contours(binary_img2) 
+    ## Camera 0
+    pts = np.array(feet, np.float32)
+    if len(pts) > 0:
+        out1 = cv2.perspectiveTransform(np.array(pts, np.float32), H2).reshape(-1,2)
+        for i, pt in enumerate(out1):
+            # filter based on area and position
+            if right_mask[int(pt[1]), int(pt[0])]: # and pt[1]*pt[1]/150 < areas[i]:
+                x,y, z,v = bounds[i]
+
+                preporcc_img = preprocess(I2[y:v, x:z])
+                player_imgs.append(preporcc_img)
+                circles.append((pt[0], pt[1]))
+                cv2.rectangle(I2, rec_bounds[i][0], rec_bounds[i][1], (0,0,255), 1)
 
     if len(player_imgs) > 0:
         res = classify(np.array(player_imgs))
@@ -107,9 +113,6 @@ while True:
     key = cv2.waitKey(70)
     if key == ord('q'):
         break
-
-# names_arr = np.array(names)
-# np.save("names.npy", names_arr)
 
 cap0.release()
 cap1.release()
