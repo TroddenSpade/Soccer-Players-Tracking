@@ -32,7 +32,7 @@ def bgs(I_org, type):
 
     kernel = np.ones((3, 3), np.uint8)
     I = cv2.morphologyEx(I, cv2.MORPH_OPEN, kernel)
-    kernel = np.ones((13, 5), np.uint8)
+    kernel = np.ones((17, 7), np.uint8)
     I = cv2.morphologyEx(I, cv2.MORPH_CLOSE, kernel)
 
     # n_mog, C, stats, centroids = cv2.connectedComponentsWithStats(I);
@@ -43,43 +43,43 @@ def bgs(I_org, type):
     return I
 
 
-cap0 = cv2.VideoCapture('videos/0_0.mp4')
-cap1 = cv2.VideoCapture('videos/0_1.mp4')
-cap2 = cv2.VideoCapture('videos/0_2.mp4')
+# cap0 = cv2.VideoCapture('videos/0_0.mp4')
+# cap1 = cv2.VideoCapture('videos/0_1.mp4')
+# cap2 = cv2.VideoCapture('videos/0_2.mp4')
 
-while True:
-    ret, I0 = cap0.read()
-    ret, I1 = cap1.read()
-    ret, I2 = cap2.read()
-    if not ret:
-        break
+# while True:
+#     ret, I0 = cap0.read()
+#     ret, I1 = cap1.read()
+#     ret, I2 = cap2.read()
+#     if not ret:
+#         break
     
-    I0_bin = bgs(I0, type=0)
-    I1_bin = bgs(I1, type=1)
-    I2_bin = bgs(I2, type=2)
+#     I0_bin = bgs(I0, type=0)
+#     I1_bin = bgs(I1, type=1)
+#     I2_bin = bgs(I2, type=2)
 
 
-    scale = 0.4
-    width = int(I1.shape[1] * scale)
-    height = int(I1.shape[0] * scale)
-    dim = (width, height)
+#     scale = 0.4
+#     width = int(I1.shape[1] * scale)
+#     height = int(I1.shape[0] * scale)
+#     dim = (width, height)
 
-    I_bin = np.hstack((cv2.resize(I0_bin, dim), cv2.resize(I1_bin, dim), cv2.resize(I2_bin, dim)))
-    I = np.hstack((cv2.resize(I0, dim), cv2.resize(I1, dim), cv2.resize(I2, dim)))
+#     I_bin = np.hstack((cv2.resize(I0_bin, dim), cv2.resize(I1_bin, dim), cv2.resize(I2_bin, dim)))
+#     I = np.hstack((cv2.resize(I0, dim), cv2.resize(I1, dim), cv2.resize(I2, dim)))
 
 
-    if ret == True:
-        cv2.imshow('soccer', I)
-        cv2.imshow('soccer binary', I_bin)
+#     if ret == True:
+#         cv2.imshow('soccer', I)
+#         cv2.imshow('soccer binary', I_bin)
         
-    else:
-        break
+#     else:
+#         break
 
-    key = cv2.waitKey(60)
-    if key == ord('q'):
-        break
+#     key = cv2.waitKey(60)
+#     if key == ord('q'):
+#         break
 
-cap0.release()
-cap1.release()
-cap2.release()
-cv2.destroyAllWindows()
+# cap0.release()
+# cap1.release()
+# cap2.release()
+# cv2.destroyAllWindows()
