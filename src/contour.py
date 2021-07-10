@@ -4,7 +4,7 @@ import cv2
 def get_contours(bin_image):
     feet = []
     rec_bounds = []
-    bounds = []
+    boxes = []
     areas = []
     contours, _ = cv2.findContours(bin_image, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
     for cnt in contours:
@@ -20,7 +20,7 @@ def get_contours(bin_image):
 
             feet.append([[x_p, y+h]])
             rec_bounds.append([(cX-l,y),(cX+l,y+h)])
-            bounds.append((x,y,x+w,y+h))
+            boxes.append((x,y,w,h))
             areas.append(area)
 
-    return feet, rec_bounds, bounds, areas
+    return feet, rec_bounds, boxes, areas
