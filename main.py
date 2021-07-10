@@ -110,12 +110,12 @@ while True:
         res = classify(np.array(player_imgs))
 
     for i, point in enumerate(circles):
-        if res[i] == 0:
-            cv2.circle(FIELD, point, 7, (255, 0, 0), -1)
-        elif res[i] == 1:
-            cv2.circle(FIELD, point, 7, (0, 255, 255), -1)
-        elif res[i] == 2:
-            cv2.circle(FIELD, point, 7, (0, 0, 255), -1)
+        if res[i] == 0: # blue
+            cv2.circle(FIELD, (int(point[0]), int(point[1])), 7, (255, 0, 0), -1)
+        elif res[i] == 1: # yellow
+            cv2.circle(FIELD, (int(point[0]), int(point[1])), 7, (0, 255, 255), -1)
+        elif res[i] == 2: # red
+            cv2.circle(FIELD, (int(point[0]), int(point[1])), 7, (0, 0, 255), -1)
 
 
     scale = 0.4
