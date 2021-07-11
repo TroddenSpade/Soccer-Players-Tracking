@@ -10,7 +10,7 @@ def get_contours(bin_image):
     for cnt in contours:
         x, y, w, h = cv2.boundingRect(cnt)
         area = cv2.contourArea(cnt)
-        if (area > 70) and (w<2.3*h):            
+        if (area > 100) and (w<2.3*h):            
             M = cv2.moments(cnt)
             cX = int(M["m10"] / M["m00"])
 
