@@ -10,10 +10,21 @@ from src.classifier import classify, preprocess
 
 SKIP_FRAME = 10
 TRACKING = False
+TRANSFORMATIONS = False
 
-cap0 = cv2.VideoCapture("./videos/" + '1_0' + ".mp4")
-cap1 = cv2.VideoCapture("./videos/" + '1_1' + ".mp4")
-cap2 = cv2.VideoCapture("./videos/" + '1_2' + ".mp4")
+FIELD = cv2.imread("field.jpg")
+mask0 = np.load("masks/I_left.npy").astype(np.uint8)
+mask1 = np.load("masks/I_center.npy").astype(np.uint8)
+mask2 = np.load("masks/I_right.npy").astype(np.uint8)
+
+scale = 0.8
+width = int(FIELD.shape[1] * scale)
+height = int(FIELD.shape[0] * scale)
+dim = (width, height)
+
+cap0 = cv2.VideoCapture("./videos/" + '0_0' + ".mp4")
+cap1 = cv2.VideoCapture("./videos/" + '0_1' + ".mp4")
+cap2 = cv2.VideoCapture("./videos/" + '0_2' + ".mp4")
 
 H0 = get_perspective_transform(type=0)
 H1 = get_perspective_transform(type=1)
@@ -46,20 +57,14 @@ while True:
     player_imgs = []
     circles = []
 
-    output_size = (FIELD.shape[1], FIELD.shape[0])
-    J0 = cv2.warpPerspective(I0, H0, output_size)
-    J1 = cv2.warpPerspective(I1, H1, output_size)
-    J2 = cv2.warpPerspective(I2, H2, output_size)
-    mask0 = np.load("masks/I_left.npy").astype(np.uint8)
-    mask1 = np.load("masks/I_center.npy").astype(np.uint8)
-    mask2 = np.load("masks/I_right.npy").astype(np.uint8)
-    ROI0 = cv2.bitwise_and(J0, J0, mask = mask0)
-    ROI1 = cv2.bitwise_and(J1, J1, mask = mask1)
-    ROI2 = cv2.bitwise_and(J2, J2, mask = mask2)
-    scale = 0.7
-    width = int(FIELD.shape[1] * scale)
-    height = int(FIELD.shape[0] * scale)
-    dim = (width, height)
+    if TRANSFORMATIONS:
+        output_size = (FIELD.shape[1], FIELD.shape[0])
+        J0 = cv2.warpPerspective(I0, H0, output_size)
+        J1 = cv2.warpPerspective(I1, H1, output_size)
+        J2 = cv2.warpPerspective(I2, H2, output_size)
+        ROI0 = cv2.bitwise_and(J0, J0, mask = mask0)
+        ROI1 = cv2.bitwise_and(J1, J1, mask = mask1)
+        ROI2 = cv2.bitwise_and(J2, J2, mask = mask2)
 
     # ## Camera 0
     binary_img0 = bgs(I0, type=0)
@@ -80,7 +85,7 @@ while True:
                     player_imgs.append(preporcc_img)
                     circles.append((pt[0], pt[1]))
                     cv2.rectangle(I0, rec_bounds[i][0], rec_bounds[i][1], (0,0,255), 1)
-                    cv2.circle(ROI0, (int(pt[0]), int(pt[1])), 5, (0, 255, 255), -1)
+                    if TRANSFORMATIONS: cv2.circle(ROI0, (int(pt[0]), int(pt[1])), 5, (0, 255, 255), -1)
     else:
         feet = []
         for box in boxes:
@@ -112,7 +117,7 @@ while True:
                     player_imgs.append(preporcc_img)
                     circles.append((pt[0], pt[1]))
                     cv2.rectangle(I1, rec_bounds[i][0], rec_bounds[i][1], (0,0,255), 1)
-                    cv2.circle(ROI1, (int(pt[0]), int(pt[1])), 5, (0, 255, 255), -1)
+                    if TRANSFORMATIONS: cv2.circle(ROI1, (int(pt[0]), int(pt[1])), 5, (0, 255, 255), -1)
     else:
         feet = []
         for box in boxes:
@@ -145,12 +150,12 @@ while True:
                     player_imgs.append(preporcc_img)
                     circles.append((pt[0], pt[1]))
                     cv2.rectangle(I2, rec_bounds[i][0], rec_bounds[i][1], (0,0,255), 1)
-                    cv2.circle(ROI2, (int(pt[0]), int(pt[1])), 5, (0, 255, 255), -1)
+                    if TRANSFORMATIONS: cv2.circle(ROI2, (int(pt[0]), int(pt[1])), 5, (0, 255, 255), -1)
     else:
         feet = []
         for box in boxes:
             (x, y, w, h) = [int(v) for v in box]
-            cv2.rectangle(I1, (x, y), (x + w, y + h), (0, 255, 0), 2)
+            cv2.rectangle(I2, (x, y), (x + w, y + h), (0, 255, 0), 2)
             feet.append([[x + w//2, y+h]])
         pts = np.array(feet, np.float32)
         if len(pts) > 0:
@@ -168,22 +173,19 @@ while True:
             cv2.circle(FIELD, (int(point[0]), int(point[1])), 7, (0, 255, 255), -1)
         elif res[i] == 2: # red
             cv2.circle(FIELD, (int(point[0]), int(point[1])), 7, (0, 0, 255), -1)
+        if TRACKING:
+            cv2.putText(I2, str(i), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
 
-
-    scale = 1
-    width = int(FIELD.shape[1] * scale)
-    height = int(FIELD.shape[0] * scale)
-    dim = (width, height)
     
     I = np.hstack((cv2.resize(I0, dim), cv2.resize(I1, dim), cv2.resize(I2, dim)))
 
+    if TRANSFORMATIONS:
+        J = np.hstack((cv2.resize(ROI0, dim), cv2.resize(ROI1, dim), cv2.resize(ROI2, dim)))
+        cv2.imshow('Transformations', J)
 
-    J = np.hstack((cv2.resize(ROI0, dim), cv2.resize(ROI1, dim), cv2.resize(ROI2, dim)))
-    cv2.imshow('J2', J)
 
-
-    cv2.imshow('soccer mask', I)
-    cv2.imshow('soccer Map', FIELD)
+    cv2.imshow('Soccer Field', I)
+    cv2.imshow('Soccer Map', FIELD)
 
     key = cv2.waitKey(20)
     if key == ord('q'):
