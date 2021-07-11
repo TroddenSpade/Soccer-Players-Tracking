@@ -6,14 +6,14 @@ def get_perspective_transform(type):
     global points1, points2
     if type == 1:
         points1 = np.array([(1255, 744.7), #br
-                            (1225.44, 87.5), #tr
-                            (25, 148.2), # tl
+                            (836.3, 100.2), #tr
+                            (432.2, 121.3), # tl
                             (230.35, 830)]).astype(np.float32) # bl
 
-        points2 = np.array([(350.28, 371), #br
-                            (592.5, 42.55), #tr
-                            (41.55, 42.55), #tl
-                            (260.9, 371)]).astype(np.float32) # bl
+        points2 = np.array([(343.28, 371), #br
+                            (408, 42.4), #tr
+                            (223, 42.4), #tl
+                            (267.9, 371)]).astype(np.float32) # bl
 
     if type == 0:
         points1 = np.array([(52, 309),
@@ -45,18 +45,44 @@ def get_perspective_transform(type):
     return cv2.getPerspectiveTransform(points1, points2)
 
 
-# I1 = cv2.imread('../bg_2.png')
-# I2 = cv2.imread('../field.jpg')
-#
-# output_size = (I2.shape[1], I2.shape[0])
-# H = get_perspective_transform(2)
-# J = cv2.warpPerspective(I1, H, output_size)
-#
-# cv2.imshow('I1', I1)
+# I0 = cv2.imread('bg_0.png')
+# I1 = cv2.imread('bg_1.png')
+# I2 = cv2.imread('bg_2.png')
+# I_field = cv2.imread('field.jpg')
+
+# output_size = (I_field.shape[1], I_field.shape[0])
+# H0 = get_perspective_transform(0)
+# H1 = get_perspective_transform(1)
+# H2 = get_perspective_transform(2)
+# J0 = cv2.warpPerspective(I0, H0, output_size)
+# J1 = cv2.warpPerspective(I1, H1, output_size)
+# J2 = cv2.warpPerspective(I2, H2, output_size)
+
+
+# mask0 = np.load("masks/I_left.npy").astype(np.uint8)
+# mask1 = np.load("masks/I_center.npy").astype(np.uint8)
+# mask2 = np.load("masks/I_right.npy").astype(np.uint8)
+
+# ROI0 = cv2.bitwise_and(J0, J0, mask = mask0)
+# ROI1 = cv2.bitwise_and(J1, J1, mask = mask1)
+# ROI2 = cv2.bitwise_and(J2, J2, mask = mask2)
+
+# scale = 1
+# width = int(I_field.shape[1] * scale)
+# height = int(I_field.shape[0] * scale)
+# dim = (width, height)
+
+# cv2.imshow('F', I_field)
 # cv2.waitKey(0)
-#
-# cv2.imshow('I2', I2)
+
+# I = np.hstack((cv2.resize(I0, dim), cv2.resize(I1, dim), cv2.resize(I2, dim)))
+# cv2.imshow('I', I)
 # cv2.waitKey(0)
-#
-# cv2.imshow('J', J)
+
+# cv2.imshow('J', J1)
 # cv2.waitKey(0)
+
+# J = np.hstack((cv2.resize(ROI0, dim), cv2.resize(ROI1, dim), cv2.resize(ROI2, dim)))
+# cv2.imshow('J2', J)
+# cv2.waitKey(0)
+
