@@ -8,8 +8,8 @@ from src.contour import get_contours
 from src.classifier import classify, preprocess
 
 
-SKIP_FRAME = 10
-TRACKING = False
+SKIP_FRAME = 8
+TRACKING = True
 TRANSFORMATIONS = False
 
 FIELD = cv2.imread("field.jpg")
@@ -22,9 +22,9 @@ width = int(FIELD.shape[1] * scale)
 height = int(FIELD.shape[0] * scale)
 dim = (width, height)
 
-cap0 = cv2.VideoCapture("./videos/" + '0_0' + ".mp4")
-cap1 = cv2.VideoCapture("./videos/" + '0_1' + ".mp4")
-cap2 = cv2.VideoCapture("./videos/" + '0_2' + ".mp4")
+cap0 = cv2.VideoCapture("./videos/" + '1_0' + ".mp4")
+cap1 = cv2.VideoCapture("./videos/" + '1_1' + ".mp4")
+cap2 = cv2.VideoCapture("./videos/" + '1_2' + ".mp4")
 
 H0 = get_perspective_transform(type=0)
 H1 = get_perspective_transform(type=1)
@@ -76,7 +76,7 @@ while True:
         if len(pts) > 0:
             out0 = cv2.perspectiveTransform(np.array(pts, np.float32), H0).reshape(-1,2)
             for i, pt in enumerate(out0):
-                if left_mask[int(pt[1]), int(pt[0])] and pt[1]**2/300 < areas[i]:
+                if left_mask[int(pt[1]), int(pt[0])] and pt[1]**2/350 < areas[i]:
                     x, y, w, h = boxes[i]
                     if TRACKING:
                         tracker = tracker_method()
@@ -103,12 +103,12 @@ while True:
     (success, boxes) = trackers1.update(I1)
     if frame_count % SKIP_FRAME == 0 or not TRACKING: 
         if TRACKING: trackers1 = cv2.legacy.MultiTracker_create()
-        feet, rec_bounds, boxes, areas = get_contours(binary_img1) 
+        feet, rec_bounds, boxes, areas = get_contours(binary_img1)
         pts = np.array(feet, np.float32)
         if len(pts) > 0:
             out1 = cv2.perspectiveTransform(np.array(pts, np.float32), H1).reshape(-1,2)
             for i, pt in enumerate(out1):
-                if center_mask[int(pt[1]), int(pt[0])] and pt[1]**2/240 < areas[i]:
+                if center_mask[int(pt[1]), int(pt[0])] and pt[1]**2/260 < areas[i] and pt[1] > 32:
                     x, y, w, h = boxes[i]
                     if TRACKING:
                         tracker = tracker_method()
@@ -134,15 +134,15 @@ while True:
     # ## Camera 2
     binary_img2 = bgs(I2, type=2)
     (success, boxes) = trackers2.update(I2)
-    if frame_count % SKIP_FRAME == 0 or not TRACKING: 
+    if frame_count % SKIP_FRAME == 0 or not TRACKING:
         if TRACKING: trackers2 = cv2.legacy.MultiTracker_create()
-        feet, rec_bounds, boxes, areas = get_contours(binary_img2) 
+        feet, rec_bounds, boxes, areas = get_contours(binary_img2)
         pts = np.array(feet, np.float32)
         if len(pts) > 0:
             out2 = cv2.perspectiveTransform(np.array(pts, np.float32), H2).reshape(-1,2)
             for i, pt in enumerate(out2):
-                if right_mask[int(pt[1]), int(pt[0])] and I2[y:y+h, x:x+w].mean() > 37: # and pt[1]*pt[1]/150 < areas[i]:                    
-                    x, y, w, h = boxes[i]
+                x, y, w, h = boxes[i]
+                if right_mask[int(pt[1]), int(pt[0])] and I2[y:y+h, x:x+w].mean() > 30:                   
                     if TRACKING:
                         tracker = tracker_method()
                         trackers2.add(tracker, I2, boxes[i])
@@ -159,8 +159,8 @@ while True:
             feet.append([[x + w//2, y+h]])
         pts = np.array(feet, np.float32)
         if len(pts) > 0:
-            out1 = cv2.perspectiveTransform(np.array(pts), H1).reshape(-1,2)
-            for i, pt in enumerate(out1):
+            out2 = cv2.perspectiveTransform(np.array(pts), H2).reshape(-1,2)
+            for i, pt in enumerate(out2):
                 circles.append((pt[0], pt[1]))
 
     if (not TRACKING or frame_count % SKIP_FRAME == 0) and len(player_imgs) > 0:
@@ -174,7 +174,7 @@ while True:
         elif res[i] == 2: # red
             cv2.circle(FIELD, (int(point[0]), int(point[1])), 7, (0, 0, 255), -1)
         if TRACKING:
-            cv2.putText(I2, str(i), (x,y), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 1)
+            cv2.putText(FIELD, str(i), (int(point[0])-3, int(point[1])+3), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
 
     
     I = np.hstack((cv2.resize(I0, dim), cv2.resize(I1, dim), cv2.resize(I2, dim)))
@@ -187,7 +187,7 @@ while True:
     cv2.imshow('Soccer Field', I)
     cv2.imshow('Soccer Map', FIELD)
 
-    key = cv2.waitKey(20)
+    key = cv2.waitKey(70)
     if key == ord('q'):
         break
 
