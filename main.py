@@ -22,9 +22,9 @@ width = int(FIELD.shape[1] * scale)
 height = int(FIELD.shape[0] * scale)
 dim = (width, height)
 
-cap0 = cv2.VideoCapture("./videos/" + '1_0' + ".mp4")
-cap1 = cv2.VideoCapture("./videos/" + '1_1' + ".mp4")
-cap2 = cv2.VideoCapture("./videos/" + '1_2' + ".mp4")
+cap0 = cv2.VideoCapture("./videos/" + '0_0' + ".mp4")
+cap1 = cv2.VideoCapture("./videos/" + '0_1' + ".mp4")
+cap2 = cv2.VideoCapture("./videos/" + '0_2' + ".mp4")
 
 H0 = get_perspective_transform(type=0)
 H1 = get_perspective_transform(type=1)
