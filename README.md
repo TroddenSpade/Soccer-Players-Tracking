@@ -4,7 +4,7 @@
 In this project we aim to reconstruct an soccer game's details from the position of the players and referee to the their movements using three recorded videos with different field coverage. Subsequently, movement and position of the individuals are displayed in a top-view demonstration of a 2D socccer pitch. For this project, we used "Soccer video and player position dataset" from [this website](https://datasets.simula.no/alfheim/).
 
 ### Input data
-videos of three aspects of the soccer game
+"Soccer video and player position dataset" provides three videos, each displaying a constant soccer match synchronously from a different prespective.
 
 | Left | Center | Right |
 | :---: | :---: | :---: |
@@ -12,31 +12,31 @@ videos of three aspects of the soccer game
 
 
 ### Extracting background of the inputs
-images of the bg
+We extract the background of the videos by calculating the mean of all frames in the videos for each pixel.
 
 | Left | Center | Right |
 | :---: | :---: | :---: |
 | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_0.png?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_1.png?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_2.png?raw=true" width="300px"> |
 
 ### Substracting the background
-
-| Left | Center | Right |
-| :---: | :---: | :---: |
-| <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_0.png?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_1.png?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_2.png?raw=true" width="300px"> |
-
-### Object detection
 In this section, the obtained backgounds are used in a KNN Background Subtraction algorithm to detect moving individuals.
 
-<img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_2.png?raw=true" width="300px">
+<img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/demo/bg-sub.gif?raw=true" width="800px">
 
 ### Objects to Patches
 The detected objects are converted to patches of variable size and saved in a folder named "img". Moreover, with the help of `pigeon.anotate` a correponding label is assigned to all of the patches.
 
-<img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_2.png?raw=true" width="300px">
+| Patches |
+| :---: |
+| <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-60-6.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-60-7.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-60-8.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-140-42.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-60-10.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-80-14.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-80-16.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-80-13.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-80-17.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-100-23.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-80-19.jpg?raw=true" height="50px">  |
 
 
 ### Classifying Individuals
 After extracting patches and labalizing them, we use 2 convolution layers following a flatten layer and 2 fully-connected layers to classify the patches into 3 classes.
+
+| Blue Team | White Team | Referees |
+| :---: | :---: | :---: |
+| <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-100-23.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1920-1399.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1600-1199.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1860-1349.jpg?raw=true" height="50px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-820-605.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1600-1200.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1580-1192.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1560-1178.jpg?raw=true" height="50px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1460-1117.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1720-1254.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1380-1052.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-2000-1470.jpg?raw=true" height="50px"> |
 
 | Layer (type) | Output Shape |  
 | --- | --- |
@@ -47,10 +47,6 @@ After extracting patches and labalizing them, we use 2 convolution layers follow
 | flatten (Flatten) | (None, 640) |
 | dense (Dense) | (None, 128) |
 | dense_1 (Dense) | (None, 3) |
-
-| Blue Team | White Team | Referees |
-| :---: | :---: | :---: |
-| <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_0-100-23.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1920-1399.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1600-1199.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1860-1349.jpg?raw=true" height="50px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-820-605.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1600-1200.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1580-1192.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1560-1178.jpg?raw=true" height="50px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1460-1117.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1720-1254.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-1380-1052.jpg?raw=true" height="50px"> <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/img/0_1-2000-1470.jpg?raw=true" height="50px"> |
 
 ### Applying Masks
 We apply two types of masks for different purposes on the input images.
@@ -66,6 +62,11 @@ We used this mask to define a unique top-view area for each input video. By appl
 | Left | Center | Right |
 | :---: | :---: | :---: |
 | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/masks/left.png?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/masks/center.png?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/masks/right.png?raw=true" width="300px"> |
+
+### Transformation
+We transform the masked input videos and their objects to get three complementary top-view presentations.
+
+<img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/demo/transform.gif?raw=true" width="800px">
 
 ### Final results
 
