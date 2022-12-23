@@ -1,30 +1,30 @@
 # Soccer Players Tracking
 ![](https://datasets.simula.no/downloads/alfheim/2013-11-28/thumb/2013-11-28_thumb.png)
 
-In this project we aim to reconstruct an soccer game's details from the position of the players and referee to the their movements using three recorded videos with different field coverage. Subsequently, movement and position of the individuals are displayed in a top-view demonstration of a 2D socccer pitch. For this project, we used "Soccer video and player position dataset" from [this website](https://datasets.simula.no/alfheim/).
+In this project, we aim to reconstruct a soccer game's details from the position of the players and referees to their movements using three recorded videos with different field coverage. Subsequently, the movement and position of the individuals are displayed in a top-view demonstration of a 2D soccer pitch. For this project, we used "Soccer video and player position dataset" from [this website](https://datasets.simula.no/alfheim/).
 
 ### Input data
-"Soccer video and player position dataset" provides three videos, each displaying a constant soccer match synchronously from a different prespective.
+"Soccer video and player position dataset" provides three videos, each displaying a constant soccer match synchronously from a different perspective.
 
 | Left | Center | Right |
 | :---: | :---: | :---: |
 | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/inputs/0.gif?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/inputs/1.gif?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/inputs/2.gif?raw=true" width="300px"> |
 
 
-### Extracting background of the inputs
-We extract the background of the videos by calculating the mean of all frames in the videos for each pixel.
+### Extracting the background of the inputs
+We extract the background of the videos by calculating the mean of all video frames for each pixel.
 
 | Left | Center | Right |
 | :---: | :---: | :---: |
 | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_0.png?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_1.png?raw=true" width="300px"> | <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/bg_2.png?raw=true" width="300px"> |
 
 ### Substracting the background
-In this section, the obtained backgounds are used in a KNN Background Subtraction algorithm to detect moving individuals.
+In this section, the obtained backgrounds are used in a KNN Background Subtraction algorithm to detect moving individuals.
 
 <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/demo/bg-sub.gif?raw=true" width="800px">
 
 ### Objects to Patches
-The detected objects are converted to patches of variable size and saved in a folder named "img". Moreover, with the help of `pigeon.anotate` a correponding label is assigned to all of the patches.
+The detected objects are converted to patches of variable size and saved in a folder named "img". Moreover, with the help of `pigeon.anotate` a corresponding label is assigned to all the patches.
 
 | Patches |
 | :---: |
@@ -32,7 +32,7 @@ The detected objects are converted to patches of variable size and saved in a fo
 
 
 ### Classifying Individuals
-After extracting patches and labalizing them, we use 2 convolution layers following a flatten layer and 2 fully-connected layers to classify the patches into 3 classes.
+After extracting patches and determining labels, we use two convolution layers following a flatten layer and two fully-connected layers to classify the patches into three classes.
 
 | Blue Team | White Team | Referees |
 | :---: | :---: | :---: |
@@ -69,6 +69,7 @@ We transform the masked input videos and their objects to get three complementar
 <img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/demo/transform.gif?raw=true" width="800px">
 
 ### Final results
+<img src="https://github.com/TroddenSpade/Soccer-Players-Tracking/blob/main/assets/demo/final.gif?raw=true" width="800px">
 
 ## References
 1. S. A. Pettersen, D. Johansen, H. Johansen, V. Berg-Johansen, V. R. Gaddam, A. Mortensen, R. Langseth, C. Griwodz H. K. Stensland, and P. Halvorsen, Soccer video and player position dataset, Proceedings of ACM MMSys 2014, March 19.
