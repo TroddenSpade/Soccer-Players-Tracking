@@ -6,6 +6,7 @@ stitcher = cv2.createStitcher(False)
 
 I0_org = cv2.imread('bg_0.png') # left
 I1_org = cv2.imread('bg_1.png') # middle
+I2_org = cv2.imread('bg_2.png') # middle
 
 def get_perspective_transform(I0_org, I1_org):
 
@@ -41,5 +42,5 @@ def get_perspective_transform(I0_org, I1_org):
     return resized
 
 J = get_perspective_transform(I0_org, I1_org)
-cv2.imshow("j", J)
+cv2.imshow("Panorama Image", J)
 cv2.waitKey()

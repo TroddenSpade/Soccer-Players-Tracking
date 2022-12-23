@@ -9,8 +9,8 @@ from src.classifier import classify, preprocess
 
 
 SKIP_FRAME = 8
-TRACKING = True
-TRANSFORMATIONS = False
+TRACKING = False
+TRANSFORMATIONS = True
 
 FIELD = cv2.imread("field.jpg")
 mask0 = np.load("masks/I_left.npy").astype(np.uint8)
@@ -177,7 +177,7 @@ while True:
             cv2.putText(FIELD, str(i), (int(point[0])-3, int(point[1])+3), cv2.FONT_HERSHEY_SIMPLEX, 0.3, (0, 0, 0), 1)
 
     
-    I = np.hstack((cv2.resize(I0, dim), cv2.resize(I1, dim), cv2.resize(I2, dim)))
+    I = np.hstack((cv2.resize(binary_img0, dim), cv2.resize(binary_img1, dim), cv2.resize(binary_img2, dim)))
 
     if TRANSFORMATIONS:
         J = np.hstack((cv2.resize(ROI0, dim), cv2.resize(ROI1, dim), cv2.resize(ROI2, dim)))
